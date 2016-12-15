@@ -1,0 +1,20 @@
+{
+  "name": "leancloud-graphql",
+  "version": "0.1.0",
+  "description": "Third party GraphQL support for LeanCloud, running on LeanEngine",
+  "engines": {
+    "node": "6.x"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "express-graphql": "^0.6.1",
+    "graphql": "^0.8.2",
+    "leanengine": "^1.2.3",
+    "lodash": "^4.17.2",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1"
+  },
+  "license": "MIT",
+  "devDependencies": {}
+}
