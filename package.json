@@ -7,13 +7,17 @@
   },
   "dependencies": {
     "body-parser": "^1.15.2",
+    "chai": "^3.5.0",
     "express": "^4.14.0",
     "express-graphql": "^0.6.1",
     "graphql": "^0.8.2",
     "leanengine": "^1.2.3",
+    "leancloud-storage": "v2.0.0-beta.6",
     "lodash": "^4.17.2",
     "request": "^2.79.0",
-    "request-promise": "^4.1.1"
+    "request-promise": "^4.1.1",
+    "supertest": "^2.0.1",
+    "supertest-as-promised": "^4.0.2"
   },
   "license": "MIT",
   "devDependencies": {}
