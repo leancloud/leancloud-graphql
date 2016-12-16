@@ -1,6 +1,20 @@
 # LeanCloud GraphQL
 运行在云引擎上的第三方 GraphQL 支持，允许你用 GraphQL 查询 LeanCloud 云存储中的所有数据。
 
+<!-- toc -->
+
+- [部署到云引擎](#%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E5%BC%95%E6%93%8E)
+- [GraphQL](#graphql)
+- [获取数据](#%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE)
+- [查询](#%E6%9F%A5%E8%AF%A2)
+- [关系](#%E5%85%B3%E7%B3%BB)
+- [创建和更新](#%E5%88%9B%E5%BB%BA%E5%92%8C%E6%9B%B4%E6%96%B0)
+- [添加到现有项目](#%E6%B7%BB%E5%8A%A0%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE)
+  * [作为中间件添加](#%E4%BD%9C%E4%B8%BA%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%B7%BB%E5%8A%A0)
+  * [获取 GraphQLSchema](#%E8%8E%B7%E5%8F%96-graphqlschema)
+
+<!-- tocstop -->
+
 ## 部署到云引擎
 
 [![Deploy to LeanEngine](http://ac-32vx10b9.clouddn.com/109bd02ee9f5875a.png)](https://leancloud.cn/1.1/engine/deploy-button)
@@ -9,7 +23,7 @@
 
 [GraphQL](http://graphql.org/) 是 FaceBook 开源的一套查询语言，你可以用它定义数据的格式和获取方法（这就是 leancloud-graphql 做的工作，它会自动将你在 LeanCloud 的数据结构转换为 GraphQL 的 Schema），然后便可以在客户端以一种非常灵活的语法来获取数据，甚至也可以用它来创建和更新数据。
 
-在使用该组件之前，你可能需要先了解一下 [GraphQL 的语法](http://graphql.org/learn/queries/) ，下面我们不会过多地介绍 GraphQL 本身。这篇文章将使用 JavaScript SDK 文档中的 [示例数据结构](https://leancloud.cn/docs/leanstorage_guide-js.html#示例数据结构) 进行讲解。
+在使用 leancloud-graphql 之前，你可能需要先了解一下 [GraphQL 的语法](http://graphql.org/learn/queries/) ，下面我们不会过多地介绍 GraphQL 本身。这篇文章将使用 JavaScript SDK 文档中的 [示例数据结构](https://leancloud.cn/docs/leanstorage_guide-js.html#示例数据结构) 进行讲解。
 
 GraphQL 在客户端几乎不需要什么 SDK，你可以花几行代码封装一个工具函数：
 
@@ -17,9 +31,6 @@ GraphQL 在客户端几乎不需要什么 SDK，你可以花几行代码封装�
 function requestGraphQL(query) {
   return fetch('/', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/graphql'
-    },
     body: query
   }).then( res => {
     return res.json();
@@ -51,7 +62,7 @@ requestGraphQL(`
 }
 ```
 
-我们也在云引擎的根路径（本地调试时为 <http://127.0.0.1:3000/>）用 express-graphql 提供了一个支持自动补全等功能的 GraphQL 控制台，你可以在这里测试你的查询。
+我们也在云引擎的根路径（本地调试时为 <http://127.0.0.1:3000/>）用 GraphiQL 提供了一个支持自动补全等功能的 GraphQL 控制台，你可以在这里测试你的查询。
 
 我们会应用客户端发来的 sessionToken，确保在用户的权限范围内进行查询。你可以从我们的 JavaScript SDK 上获取 sessionToken 并随着请求发送，修改 requestGraphQL：
 
@@ -277,4 +288,47 @@ mutation {
     priority: 5
   }
 }
+```
+
+## 添加到现有项目
+
+如果要添加到现有项目，需要先将 leancloud-graphql 添加为依赖：
+
+    npm install --save leancloud-graphql
+
+请确保 Node.js 版本在 4.0 以上。
+
+### 作为中间件添加
+
+leancloud-graphql 导出了一个 express 中间件，可以直接添加到现有的 express 项目上：
+
+```javascript
+var leancloudGraphQL = require('leancloud-graphql').express;
+var app = express();
+app.use(leancloudGraphQL());
+```
+
+leancloudGraphQL 有一些选项：
+
+- `graphiql` 开启调试控制台，默认 true.
+- `cors` 提供跨域支持，默认 true.
+- `pretty` 格式化返回的 JSON。
+
+使用该中间件时请确保环境变量中有 `LEANCLOUD_` 系列的环境变量，即需要运行在云引擎上或用 `lean up` 启动。
+
+### 获取 GraphQLSchema
+
+leancloud-graphql 默认导出了一个构建 GraphQLSchema 的函数：
+
+```javascript
+var buildSchema = require('leancloud-graphql');
+var {printSchema} = require('graphql');
+
+buildSchema({
+  appId: process.env.LEANCLOUD_APP_ID,
+  appKey: process.env.LEANCLOUD_APP_KEY,
+  masterKey: process.env.LEANCLOUD_APP_MASTER_KEY
+}).then( schema => {
+  console.log(printSchema(schema));
+});
 ```

@@ -10,7 +10,7 @@ describe('mutation', function() {
           objectId, name, score
         }
       }
-    `).then( res => {
+    `, {sessionToken: true}).then( res => {
       const leaderboard = res.body.data.Leaderboard;
       objectId = leaderboard.objectId;
 
@@ -28,7 +28,7 @@ describe('mutation', function() {
           score
         }
       }
-    `).then( res => {
+    `, {sessionToken: true}).then( res => {
       res.body.data.Leaderboard.score.should.be.equal(20);
     });
   });

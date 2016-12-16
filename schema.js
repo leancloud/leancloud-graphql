@@ -4,12 +4,6 @@ const {GraphQLID, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLFloat} = req
 const _ = require('lodash');
 const AV = require('leancloud-storage');
 
-const appId = process.env.LEANCLOUD_APP_ID;
-const appKey = process.env.LEANCLOUD_APP_KEY;
-const masterKey = process.env.LEANCLOUD_APP_MASTER_KEY;
-
-AV.init({appId, appKey, masterKey});
-
 const LCData = new GraphQLScalarType({
   name: 'Date',
   serialize: (date) => {
@@ -40,7 +34,9 @@ const LCTypeMapping = {
   Array: LCArray
 }
 
-module.exports = function prepareSchema(extraDefinitions) {
+module.exports = function buildSchema({appId, appKey, masterKey}) {
+  AV.init({appId, appKey, masterKey});
+
   return request({
     url: 'https://api.leancloud.cn/1.1/schemas',
     json: true,
@@ -142,7 +138,7 @@ module.exports = function prepareSchema(extraDefinitions) {
       }),
 
       mutation: new GraphQLObjectType({
-        name: 'Mutation',
+        name: 'LeanStorageMutation',
         fields: _.mapValues(cloudSchemas, (schema, className) => {
           return {
             name: className,
