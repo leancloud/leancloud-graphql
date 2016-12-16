@@ -4,10 +4,11 @@ const {graphql} = require('graphql');
 const expressGraphql = require('express-graphql');
 const AV = require('leanengine');
 const parseLeancloudHeaders = require('leanengine/middleware/parse-leancloud-headers');
+const cors = require('leanengine/middleware/cors');
 
 const prepareSchema = require('./lib/schema');
 
-const schemaReady = prepareSchema();
+const schemaReady = prepareSchema({});
 
 const expressGraphqlReady = schemaReady.then( schema => {
   return expressGraphql({
@@ -27,6 +28,7 @@ app.use('/graphql', (req, res, next) => {
 });
 
 app.use(parseLeancloudHeaders(AV, {restrict: false}));
+app.use(cors);
 
 app.use(bodyParser.text({
   type: 'application/graphql'
