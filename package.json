@@ -20,6 +20,6 @@
     "supertest": "^2.0.1",
     "supertest-as-promised": "^4.0.2"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {}
 }
