@@ -40,7 +40,7 @@ function requestGraphQL(query) {
 }
 ```
 
-我们也在云引擎的根路径（本地调试时为 <http://127.0.0.1:3000/>）用 GraphiQL 提供了一个支持自动补全等功能的 GraphQL 控制台，你可以在这里测试你的查询。
+我们也用 GraphiQL 提供了一个支持自动补全等功能的 GraphQL 控制台（本地调试时为 <http://127.0.0.1:3000/>），你可以在这里测试你的查询。
 
 我们会应用客户端发来的 sessionToken，确保在用户的权限范围内进行查询。你可以从我们的 JavaScript SDK 上获取 sessionToken 并随着请求发送，修改 requestGraphQL：
 

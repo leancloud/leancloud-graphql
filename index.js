@@ -1,2 +1,2 @@
 module.exports = require('./schema');
-module.exports.express = require('./middleware')
+module.exports.express = require('./middleware');
