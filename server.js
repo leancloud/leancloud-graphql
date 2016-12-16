@@ -6,11 +6,11 @@ AV.init({
   masterKey: process.env.LEANCLOUD_APP_MASTER_KEY
 });
 
-AV.Cloud.useMasterKey();
-
 const app = require('./app');
 const port = process.env.LEANCLOUD_APP_PORT || 3000;
 
 app.listen(port, () => {
-  console.log('SniperaaS is started on', port);
+  console.log('LeanCloud GraphQL is started on', port);
 });
+
+module.exports = app;
