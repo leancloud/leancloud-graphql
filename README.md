@@ -38,28 +38,6 @@ function requestGraphQL(query) {
     return result.data;
   });
 }
-
-requestGraphQL(`
-  query {
-    Todo {
-      title, priority
-    }
-  }
-`)
-```
-
-结果：
-
-```javascript
-{
-  Todo: [
-    {title: "紧急 Bug 修复", priority: 0},
-    {title: "打电话给 Peter",priority: 5},
-    {title: "还信用卡账单", priority: 10},
-    {title: "买酸奶", priority: 10},
-    {title: "团队会议", priority: 5}
-  ]
-}
 ```
 
 我们也在云引擎的根路径（本地调试时为 <http://127.0.0.1:3000/>）用 GraphiQL 提供了一个支持自动补全等功能的 GraphQL 控制台，你可以在这里测试你的查询。
@@ -75,14 +53,16 @@ requestGraphQL(`
 
 ## 获取数据
 
-最简单的查询我们前面已经见过到了：
+最简单的一个查询：
 
-```graphql
-query {
-  Todo {
-    title, priority
+```javascript
+requestGraphQL(`
+  query {
+    Todo {
+      title, priority
+    }
   }
-}
+`)
 ```
 
 默认会返回最多 100 条数据：
@@ -305,7 +285,7 @@ leancloud-graphql 导出了一个 express 中间件，可以直接添加到现�
 ```javascript
 var leancloudGraphQL = require('leancloud-graphql').express;
 var app = express();
-app.use(leancloudGraphQL());
+app.use('/graphql', leancloudGraphQL());
 ```
 
 leancloudGraphQL 有一些选项：
