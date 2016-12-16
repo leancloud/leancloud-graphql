@@ -145,8 +145,7 @@ query {
 ```graphql
 query {
   TodoFolder {
-    name,
-    containedTodos {
+    name, containedTodos {
       title, priority
     }
   }
@@ -170,6 +169,68 @@ query {
       {title: "买酸奶", priority: 10}
     ]
   }]
+}
+```
+
+如果一个字段是 Pointer 你也可以将它展开，例如我们可以查询 Todo 的创建者（到用户表的指针）：
+
+```graphql
+query {
+  Todo(limit: 1) {
+    title, owner {
+      username, email
+    }
+  }
+}
+```
+
+结果：
+
+```javascript
+{
+  Todo: [
+    {
+      title: "紧急 Bug 修复",
+      owner: {
+        username: "someone",
+        email: "test@example.com"
+      }
+    }
+  ]
+}
+```
+
+在 GraphQL 中你甚至可以进行多层级的关系查询：
+
+```graphql
+query {
+  TodoFolder {
+    name,
+    containedTodos {
+      title, owner {
+        username, email
+      }
+    }
+  }
+}
+```
+
+结果（省略了一部分）：
+
+```javascript
+{
+  TodoFolder: [{
+    name: "工作",
+    containedTodos: [{
+      title: "紧急 Bug 修复",
+      owner: {
+        username: "someone",
+        email: "test@example.com"
+      }
+    }, // ...
+    ]
+  }, // ...
+  ]
 }
 ```
 
