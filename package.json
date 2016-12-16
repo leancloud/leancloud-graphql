@@ -2,12 +2,16 @@
   "name": "leancloud-graphql",
   "version": "0.1.0",
   "description": "Third party GraphQL support for LeanCloud, running on LeanEngine",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jysperm/leancloud-graphql"
+  },
   "engines": {
     "node": "6.x"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
-    "chai": "^3.5.0",
     "cors": "^2.8.1",
     "express": "^4.14.0",
     "express-graphql": "^0.6.1",
@@ -16,10 +20,11 @@
     "leanengine": "^1.2.3",
     "lodash": "^4.17.2",
     "request": "^2.79.0",
-    "request-promise": "^4.1.1",
+    "request-promise": "^4.1.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
     "supertest": "^2.0.1",
     "supertest-as-promised": "^4.0.2"
-  },
-  "license": "Apache-2.0",
-  "devDependencies": {}
+  }
 }
