@@ -140,7 +140,38 @@ query {
 
 ## 关系
 
-TODO
+如果对象的一个字段是 Relation，那么你就可以在 GraphQL 中将它展开，例如我们可以查询每个 TodoFolder 中包含的 Todo：
+
+```graphql
+query {
+  TodoFolder {
+    name,
+    containedTodos {
+      title, priority
+    }
+  }
+}
+```
+
+结果：
+
+```javascript
+{
+  TodoFolder: [{
+    name: "工作",
+    containedTodos: [
+      {title: "紧急 Bug 修复", priority: 0},
+      {title: "打电话给 Peter", priority: 5},
+      {title: "团队会议", priority: 5}
+    ]
+  }, {
+    name: "购物清单",
+    containedTodos: [
+      {title: "买酸奶", priority: 10}
+    ]
+  }]
+}
+```
 
 ## 创建和更新
 
@@ -186,7 +217,3 @@ mutation {
   }
 }
 ```
-
-## 进阶话题
-
-TODO

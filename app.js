@@ -28,7 +28,6 @@ app.use('/graphql', (req, res, next) => {
 });
 
 app.use(parseLeancloudHeaders(AV, {restrict: false}));
-app.use(cors);
 
 app.use(bodyParser.text({
   type: 'application/graphql'
@@ -36,9 +35,9 @@ app.use(bodyParser.text({
 
 app.get('/', (req, res) => {
   res.redirect('/graphql');
-})
+});
 
-app.post('/', (req, res) => {
+app.post('/', cors, (req, res) => {
   schemaReady.done( schema => {
     return graphql(schema, req.body, {}, {
       authOptions: {
