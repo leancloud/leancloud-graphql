@@ -21,6 +21,40 @@ describe('relation', function() {
     });
   });
 
+  it('limit should work on relation', () => {
+    return requestGraphQL(`
+      query {
+        TodoFolder {
+          name, containedTodos(limit: 1) {
+            title, priority
+          }
+        }
+      }
+    `).then( res => {
+      res.body.data.TodoFolder.forEach(todoFolder => {
+        todoFolder.containedTodos.length.should.be.equal(1);
+      });
+    });
+  });
+
+  it('greaterThan should work on relation', () => {
+    return requestGraphQL(`
+      query {
+        TodoFolder {
+          name, containedTodos(greaterThan: {priority: 5}) {
+            title, priority
+          }
+        }
+      }
+    `).then( res => {
+      res.body.data.TodoFolder.forEach(todoFolder => {
+        todoFolder.containedTodos.forEach( todo => {
+          todo.priority.should.be.least(5);
+        });
+      });
+    });
+  });
+
   it('should populate pointer', () => {
     return requestGraphQL(`
       query {
@@ -79,6 +113,24 @@ describe('relation', function() {
     });
   });
 
+  it('exists should work in reverse pointer', () => {
+    return requestGraphQL(`
+      query {
+        _User {
+          username, ownerOfTodo(exists: {content: true}) {
+            title, content
+          }
+        }
+      }
+    `).then( res => {
+      res.body.data._User.forEach( user => {
+        user.ownerOfTodo.forEach( todo => {
+          todo.content.should.be.a('string');
+        });
+      });
+    });
+  });
+
   it('should populate reverse relation', () => {
     return requestGraphQL(`
       query {
@@ -93,6 +145,22 @@ describe('relation', function() {
         todo.containedTodosOfTodoFolder.forEach( todoFolder => {
           todoFolder.name.should.be.a('string');
         });
+      });
+    });
+  });
+
+  it('limit should work in reverse relation', () => {
+    return requestGraphQL(`
+      query {
+        Todo {
+          containedTodosOfTodoFolder(limit: 1) {
+            name
+          }
+        }
+      }
+    `).then( res => {
+      res.body.data.Todo.forEach( todo => {
+        todo.containedTodosOfTodoFolder.length.should.be.most(1);
       });
     });
   });

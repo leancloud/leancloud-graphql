@@ -58,8 +58,9 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
           if (definition.type === 'Relation') {
             return {
               type: new GraphQLList(classSchemas[definition.className]),
+              args: querySchemas[classSchemas[definition.className]].args,
               resolve: (source, args, {authOptions}, info) => {
-                return source.relation(field).query().find(authOptions);
+                return addArgumentsToQuery(source.relation(field).query(), args).find(authOptions);
               }
             }
           } else if (definition.type === 'Pointer') {
@@ -93,8 +94,9 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
 
               fields[`${sourceField}Of${sourceClassName}`] = {
                 type: new GraphQLList(classSchemas[sourceClassName]),
+                args: querySchemas[classSchemas[sourceClassName]].args,
                 resolve: (source, args, {authOptions}, info) => {
-                  return new AV.Query(sourceClassName).equalTo(sourceField, source).find(authOptions);
+                  return addArgumentsToQuery(new AV.Query(sourceClassName), args).equalTo(sourceField, source).find(authOptions);
                 }
               };
             }
@@ -112,111 +114,82 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
       });
     });
 
+    const querySchemas = _.mapValues(cloudSchemas, (schema, className) => {
+      const FieldsEnum = new GraphQLEnumType({
+        name: `${className}Fields`,
+        values: _.mapValues(schema, (definition, field) => {
+          return {value: field};
+        })
+      });
+
+      const createFieldsInputType = function(argName, innerType) {
+        return new GraphQLInputObjectType({
+          name: `${className}${_.upperFirst(argName)}Argument`,
+          fields: _.pickBy(_.mapValues(schema, (definition, field) => {
+            if (innerType) {
+              return {type: innerType};
+            } else if (LCTypeMapping[definition.type]) {
+              return {
+                type: LCTypeMapping[definition.type]
+              };
+            } else {
+              return null;
+            }
+          }))
+        });
+      };
+
+      return {
+        name: className,
+        type: new GraphQLList(classSchemas[className]),
+        args: {
+          objectId: {
+            type: GraphQLID
+          },
+          ascending: {
+            type: FieldsEnum
+          },
+          descending: {
+            type: FieldsEnum
+          },
+          limit: {
+            type: GraphQLInt
+          },
+          equalTo: {
+            type: createFieldsInputType('equalTo')
+          },
+          greaterThan: {
+            type: createFieldsInputType('greaterThan')
+          },
+          greaterThanOrEqualTo: {
+            type: createFieldsInputType('greaterThanOrEqualTo')
+          },
+          lessThan: {
+            type: createFieldsInputType('lessThan')
+          },
+          lessThanOrEqualTo: {
+            type: createFieldsInputType('lessThanOrEqualTo')
+          },
+          containedIn: {
+            type: createFieldsInputType('containedIn', new GraphQLList(GraphQLID))
+          },
+          containsAll: {
+            type: createFieldsInputType('containsAll', new GraphQLList(GraphQLID))
+          },
+          exists: {
+            type: createFieldsInputType('exists', GraphQLBoolean)
+          }
+        },
+        resolve: (source, args, {authOptions}, info) => {
+          return addArgumentsToQuery(new AV.Query(className), args).find(authOptions);
+        }
+      };
+    });
+
     return new GraphQLSchema({
       query: new GraphQLObjectType({
         name: 'LeanStorage',
-        fields: _.mapValues(cloudSchemas, (schema, className) => {
-          const FieldsEnum = new GraphQLEnumType({
-            name: `${className}Fields`,
-            values: _.mapValues(schema, (definition, field) => {
-              return {value: field};
-            })
-          });
-
-          const createFieldsInputType = function(argName, innerType) {
-            return new GraphQLInputObjectType({
-              name: `${className}${_.upperFirst(argName)}Argument`,
-              fields: _.pickBy(_.mapValues(schema, (definition, field) => {
-                if (innerType) {
-                  return {type: innerType};
-                } else if (LCTypeMapping[definition.type]) {
-                  return {
-                    type: LCTypeMapping[definition.type]
-                  };
-                } else {
-                  return null;
-                }
-              }))
-            });
-          };
-
-          return {
-            name: className,
-            type: new GraphQLList(classSchemas[className]),
-            args: {
-              objectId: {
-                type: GraphQLID
-              },
-              ascending: {
-                type: FieldsEnum
-              },
-              descending: {
-                type: FieldsEnum
-              },
-              limit: {
-                type: GraphQLInt
-              },
-              equalTo: {
-                type: createFieldsInputType('equalTo')
-              },
-              greaterThan: {
-                type: createFieldsInputType('greaterThan')
-              },
-              greaterThanOrEqualTo: {
-                type: createFieldsInputType('greaterThanOrEqualTo')
-              },
-              lessThan: {
-                type: createFieldsInputType('lessThan')
-              },
-              lessThanOrEqualTo: {
-                type: createFieldsInputType('lessThanOrEqualTo')
-              },
-              containedIn: {
-                type: createFieldsInputType('containedIn', new GraphQLList(GraphQLID))
-              },
-              containsAll: {
-                type: createFieldsInputType('containsAll', new GraphQLList(GraphQLID))
-              },
-              exists: {
-                type: createFieldsInputType('exists', GraphQLBoolean)
-              }
-            },
-            resolve: (source, args, {authOptions}, info) => {
-              const query = new AV.Query(className);
-
-              ['ascending', 'descending', 'limit'].forEach( method => {
-                if (args[method] !== undefined) {
-                  query[method](args[method]);
-                }
-              });
-
-              ['equalTo', 'greaterThan', 'greaterThanOrEqualTo', 'lessThan',
-               'lessThanOrEqualTo', 'containedIn', 'containsAll'].forEach( method => {
-                if (_.isObject(args[method])) {
-                  _.forEach(args[method], (value, key) => {
-                    query[method](key, value);
-                  });
-                }
-              });
-
-              if (_.isObject(args.exists)) {
-                _.forEach(args.exists, (value, key) => {
-                  if (value) {
-                    query.exists(key);
-                  } else {
-                    query.doesNotExist(key);
-                  }
-                });
-              }
-
-              if (args.objectId) {
-                query.equalTo('objectId', args.objectId);
-              }
-
-              return query.find(authOptions);
-            }
-          };
-        })
+        fields: querySchemas
       }),
 
       mutation: new GraphQLObjectType({
@@ -243,3 +216,36 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
     });
   });
 };
+
+function addArgumentsToQuery(query, args) {
+  ['ascending', 'descending', 'limit'].forEach( method => {
+    if (args[method] !== undefined) {
+      query[method](args[method]);
+    }
+  });
+
+  ['equalTo', 'greaterThan', 'greaterThanOrEqualTo', 'lessThan',
+   'lessThanOrEqualTo', 'containedIn', 'containsAll'].forEach( method => {
+    if (_.isObject(args[method])) {
+      _.forEach(args[method], (value, key) => {
+        query[method](key, value);
+      });
+    }
+  });
+
+  if (_.isObject(args.exists)) {
+    _.forEach(args.exists, (value, key) => {
+      if (value) {
+        query.exists(key);
+      } else {
+        query.doesNotExist(key);
+      }
+    });
+  }
+
+  if (args.objectId) {
+    query.equalTo('objectId', args.objectId);
+  }
+
+  return query;
+}

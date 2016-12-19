@@ -15,6 +15,7 @@
 - [关系查询](#%E5%85%B3%E7%B3%BB%E6%9F%A5%E8%AF%A2)
   * [Relation](#relation)
   * [Pointer](#pointer)
+  * [查询条件](#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6-1)
   * [反向关系](#%E5%8F%8D%E5%90%91%E5%85%B3%E7%B3%BB)
   * [多级关系](#%E5%A4%9A%E7%BA%A7%E5%85%B3%E7%B3%BB)
 - [修改对象](#%E4%BF%AE%E6%94%B9%E5%AF%B9%E8%B1%A1)
@@ -66,7 +67,7 @@ function requestGraphQL(query) {
 
 最简单的一个查询：
 
-```javascript
+```graphql
 requestGraphQL(`
   query {
     Todo {
@@ -108,7 +109,7 @@ query {
 
 结果：
 
-```
+```javascript
 {
   Todo: [
     {title: "紧急 Bug 修复", priority: 0},
@@ -272,6 +273,43 @@ query {
   ]
 }
 ```
+
+### 查询条件
+
+你也可以在关系查询上附加查询参数或查询条件：
+
+```graphql
+query {
+  TodoFolder {
+    name, containedTodos(limit: 1, exists: {content: true}) {
+      title, content
+    }
+  }
+}
+```
+
+结果：
+
+```javascript
+{
+  TodoFolder: [{
+    name: "工作",
+    containedTodos: [
+      {title: "团队会议", content: "BearyChat"}
+    ]
+  }, {
+    name: "购物清单",
+    containedTodos: []
+  }, {
+    name: "someone",
+    containedTodos: [
+      {title: "还信用卡账单", content: "2016 年 12 月"}
+    ]
+  }]
+}
+```
+
+支持的参数和条件包括：`ascending`、`descending`、`limit`、`objectId`、`equalTo`、`exists`、`greaterThan`、`greaterThanOrEqualTo`、`lessThan`、`lessThanOrEqualTo`、`containedIn`、`containsAll`。
 
 ### 反向关系
 
