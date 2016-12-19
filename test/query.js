@@ -21,7 +21,7 @@ describe('query', function() {
   it('should sort by priority', () => {
     return requestGraphQL(`
       query {
-        Todo(ascending: "priority") {
+        Todo(ascending: priority) {
           title, priority
         }
       }

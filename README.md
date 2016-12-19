@@ -95,7 +95,7 @@ requestGraphQL(`
 
 ```graphql
 query {
-  Todo(ascending: "priority", limit: 2) {
+  Todo(ascending: priority, limit: 2) {
     title, priority
   }
 }

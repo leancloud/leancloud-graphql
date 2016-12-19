@@ -1,4 +1,4 @@
-const {GraphQLSchema, GraphQLObjectType, GraphQLScalarType , GraphQLList} = require('graphql');
+const {GraphQLSchema, GraphQLObjectType, GraphQLScalarType, GraphQLList, GraphQLEnumType} = require('graphql');
 const {GraphQLID, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLFloat} = require('graphql');
 const request = require('request-promise');
 const AV = require('leancloud-storage');
@@ -115,6 +115,13 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
       query: new GraphQLObjectType({
         name: 'LeanStorage',
         fields: _.mapValues(cloudSchemas, (schema, className) => {
+          const FieldsEnum = new GraphQLEnumType({
+            name: `${className}Fields`,
+            values: _.mapValues(schema, (definition, field) => {
+              return {value: field};
+            })
+          });
+
           return {
             name: className,
             type: new GraphQLList(classSchemas[className]),
@@ -123,10 +130,10 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
                 type: GraphQLID
               },
               ascending: {
-                type: GraphQLString
+                type: FieldsEnum
               },
               descending: {
-                type: GraphQLString
+                type: FieldsEnum
               },
               limit: {
                 type: GraphQLInt
