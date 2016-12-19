@@ -200,6 +200,73 @@ query {
 }
 ```
 
+### 反向关系
+
+在实现一对多关系时，我们经常会在「多」上面保存一个到「一」的指针，leancloud-graphql 会自动在「多」上面创建一个属性，用来表示反向关系。例如因为 Todo 的 owner 是一个指向 \_User 的 Pointer，所以 \_User 上会自动出现一个 `ownerOfTodo`：
+
+```graphql
+query {
+  _User {
+    username, ownerOfTodo {
+      title
+    }
+  }
+}
+```
+
+这样我们便可以查到每个用户的 Todo：
+
+```javascript
+{
+  _User: [{
+    username: "someone",
+    ownerOfTodo: [
+      {title: "紧急 Bug 修复"},
+      {title: "打电话给 Peter"},
+      {title: "还信用卡账单"},
+      {title: "买酸奶"}
+    ]
+  }]
+}
+```
+
+你也可以在 Relation 上进行反向查询，例如查询每个 Todo 所属的 TodoFolder：
+
+```graphql
+query {
+  Todo {
+    title, containedTodosOfTodoFolder {
+      name
+    }
+  }
+}
+```
+
+结果（省略了一部分）：
+
+```javascript
+{
+  Todo: [{
+    title: "紧急 Bug 修复",
+    containedTodosOfTodoFolder: [
+      {name: "工作"},
+      {name: "someone"}
+    ]
+  }, {
+    title: "买酸奶",
+    containedTodosOfTodoFolder: [
+      {name: "购物清单"},
+      {name: "someone"}
+    ]
+  }, {
+    title: "团队会议",
+    containedTodosOfTodoFolder: [
+      {name: "工作"}
+    ]
+  }]
+}
+```
+
 ### 多级关系
 
 在 GraphQL 中你甚至可以进行多层级的关系查询：

@@ -52,8 +52,46 @@ describe('query', function() {
     `).then( res => {
       res.body.data.TodoFolder.forEach(todoFolder => {
         todoFolder.containedTodos.forEach( todo => {
-          todo.owner.username.should.be.a('string');
-          todo.owner.email.should.be.a('string');
+          if (todo.owner) {
+            todo.owner.username.should.be.a('string');
+            todo.owner.email.should.be.a('string');
+          }
+        });
+      });
+    });
+  });
+
+  it('should populate reverse pointer', () => {
+    return requestGraphQL(`
+      query {
+        _User {
+          username, ownerOfTodo {
+            title
+          }
+        }
+      }
+    `).then( res => {
+      res.body.data._User.forEach( user => {
+        user.ownerOfTodo.forEach( todo => {
+          todo.title.should.be.a('string');
+        });
+      });
+    });
+  });
+
+  it('should populate reverse relation', () => {
+    return requestGraphQL(`
+      query {
+        Todo {
+          containedTodosOfTodoFolder {
+            name
+          }
+        }
+      }
+    `).then( res => {
+      res.body.data.Todo.forEach( todo => {
+        todo.containedTodosOfTodoFolder.forEach( todoFolder => {
+          todoFolder.name.should.be.a('string');
         });
       });
     });

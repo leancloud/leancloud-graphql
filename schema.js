@@ -1,8 +1,10 @@
-const request = require('request-promise');
 const {GraphQLSchema, GraphQLObjectType, GraphQLScalarType , GraphQLList} = require('graphql');
 const {GraphQLID, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLFloat} = require('graphql');
-const _ = require('lodash');
+const request = require('request-promise');
 const AV = require('leancloud-storage');
+const _ = require('lodash');
+
+const debug = require('debug')('leancloud-graphql');
 
 const LCDate = new GraphQLScalarType({
   name: 'Date',
@@ -82,6 +84,21 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
             return source.id;
           }
         };
+
+        _.forEach(cloudSchemas, (schema, sourceClassName) => {
+          _.forEach(schema, (definition, sourceField) => {
+            if (definition.className === className) {
+              debug(`Add reverse relationship: ${sourceField}Of${sourceClassName} on ${className}`);
+
+              fields[`${sourceField}Of${sourceClassName}`] = {
+                type: new GraphQLList(classSchemas[sourceClassName]),
+                resolve: (source, args, {authOptions}, info) => {
+                  return new AV.Query(sourceClassName).equalTo(sourceField, source).find(authOptions);
+                }
+              };
+            }
+          });
+        });
 
         return fields;
       }
