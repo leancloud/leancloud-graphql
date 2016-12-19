@@ -176,6 +176,9 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
               },
               containsAll: {
                 type: createFieldsInputType('containsAll', new GraphQLList(GraphQLID))
+              },
+              exists: {
+                type: createFieldsInputType('exists', GraphQLBoolean)
               }
             },
             resolve: (source, args, {authOptions}, info) => {
@@ -187,16 +190,24 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
                 }
               });
 
-              ['equalTo', 'greaterThan', 'greaterThanOrEqualTo', 'lessThan', 'lessThanOrEqualTo',
-               'containedIn', 'containsAll'].forEach( method => {
+              ['equalTo', 'greaterThan', 'greaterThanOrEqualTo', 'lessThan',
+               'lessThanOrEqualTo', 'containedIn', 'containsAll'].forEach( method => {
                 if (_.isObject(args[method])) {
                   _.forEach(args[method], (value, key) => {
                     query[method](key, value);
                   });
-                } else {
-                  debug(`Ignored argument ${method}`);
                 }
               });
+
+              if (_.isObject(args.exists)) {
+                _.forEach(args.exists, (value, key) => {
+                  if (value) {
+                    query.exists(key);
+                  } else {
+                    query.doesNotExist(key);
+                  }
+                });
+              }
 
               if (args.objectId) {
                 query.equalTo('objectId', args.objectId);

@@ -8,7 +8,10 @@
 - [获取数据](#%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE)
 - [查询条件](#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6)
   * [equalTo](#equalto)
+  * [exists](#exists)
   * [范围查询](#%E8%8C%83%E5%9B%B4%E6%9F%A5%E8%AF%A2)
+  * [数组查询](#%E6%95%B0%E7%BB%84%E6%9F%A5%E8%AF%A2)
+  * [组合查询](#%E7%BB%84%E5%90%88%E6%9F%A5%E8%AF%A2)
 - [关系查询](#%E5%85%B3%E7%B3%BB%E6%9F%A5%E8%AF%A2)
   * [Relation](#relation)
   * [Pointer](#pointer)
@@ -148,6 +151,18 @@ query {
 }
 ```
 
+### exists
+
+exists 可以用来查询存在或不存在某一字段的对象，例如我们查询存在 title 但不存在 content 的 Todo：
+
+```graphql
+query {
+  Todo(exists: {title: true, content: false}) {
+    title, content
+  }
+}
+```
+
 ### 范围查询
 
 ```graphql
@@ -179,6 +194,18 @@ query {
 
 - `containedIn` 约束指定列中包含特定元素。
 - `containsAll` 约束指定列中包含所有元素。
+
+### 组合查询
+
+你可以将我们前面提到的所有查询条件组合在一起：
+
+```graphql
+query {
+  Todo(exists: {content: true}, ascending: priority, greaterThan: {priority: 5}) {
+    title, content, priority
+  }
+}
+```
 
 ## 关系查询
 

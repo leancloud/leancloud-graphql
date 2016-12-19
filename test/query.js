@@ -1,3 +1,5 @@
+const {expect} = require('chai');
+
 const requestGraphQL = require('./client');
 
 describe('query', function() {
@@ -95,6 +97,21 @@ describe('query', function() {
     `).then( res => {
       res.body.data.Todo.forEach( ({tags}) => {
         tags.should.eql(['Online']);
+      });
+    });
+  });
+
+  it('should work with exists', () => {
+    return requestGraphQL(`
+      query {
+        Todo(exists: {title: true, content: false}) {
+          title, content
+        }
+      }
+    `).then( res => {
+      res.body.data.Todo.forEach( ({title, content}) => {
+        title.should.be.a('string');
+        expect(content).to.not.exist;
       });
     });
   });
