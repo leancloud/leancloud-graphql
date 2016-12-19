@@ -1,6 +1,6 @@
 const requestGraphQL = require('./client');
 
-describe('query', function() {
+describe('relation', function() {
   it('should populate relation', () => {
     return requestGraphQL(`
       query {

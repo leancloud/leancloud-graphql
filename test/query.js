@@ -57,4 +57,17 @@ describe('query', function() {
       res.body.data.Todo[0].title.should.be.equal('还信用卡账单');
     });
   });
+
+  it('should work with equalTo', () => {
+    return requestGraphQL(`
+      query {
+        Todo(equalTo: {title: "团队会议"}) {
+          title
+        }
+      }
+    `).then( res => {
+      res.body.data.Todo.length.should.be.equal(1);
+      res.body.data.Todo[0].title.should.be.equal('团队会议');
+    });
+  });
 });

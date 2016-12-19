@@ -1,4 +1,5 @@
-const {GraphQLSchema, GraphQLObjectType, GraphQLScalarType, GraphQLList, GraphQLEnumType} = require('graphql');
+const {GraphQLSchema, GraphQLObjectType, GraphQLScalarType} = require('graphql');
+const {GraphQLEnumType, GraphQLInputObjectType, GraphQLList} = require('graphql')
 const {GraphQLID, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLFloat} = require('graphql');
 const request = require('request-promise');
 const AV = require('leancloud-storage');
@@ -122,6 +123,29 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
             })
           });
 
+          const createFieldsInputType = function(argName, {arrayWrap, innerType} = {}) {
+            return new GraphQLInputObjectType({
+              name: `${className}${_.upperFirst(argName)}Argument`,
+              fields: _.pickBy(_.mapValues(schema, (definition, field) => {
+                var fieldType = innerType;
+
+                if (!innerType) {
+                  if (LCTypeMapping[definition.type]) {
+                    fieldType = LCTypeMapping[definition.type];
+                  } else {
+                    return null;
+                  }
+                }
+
+                if (arrayWrap) {
+                  return {type: new GraphQLList(fieldType)};
+                } else {
+                  return {type: fieldType};
+                }
+              }))
+            });
+          };
+
           return {
             name: className,
             type: new GraphQLList(classSchemas[className]),
@@ -140,6 +164,9 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
               },
               skip: {
                 type: GraphQLInt
+              },
+              equalTo: {
+                type: createFieldsInputType('equalTo')
               }
             },
             resolve: (source, args, {authOptions}, info) => {
@@ -148,6 +175,16 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
               ['ascending', 'descending', 'limit', 'skip'].forEach( method => {
                 if (args[method] !== undefined) {
                   query[method](args[method]);
+                }
+              });
+
+              ['equalTo'].forEach( method => {
+                if (_.isObject(args[method])) {
+                  _.forEach(args[method], (value, key) => {
+                    query[method](key, value);
+                  });
+                } else {
+                  debug(`Ignored argument ${method}`);
                 }
               });
 
