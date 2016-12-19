@@ -4,31 +4,31 @@ describe('query', function() {
   it('should get all objects', () => {
     return requestGraphQL(`
       query {
-        NPMPackages {
-          objectId, name, usersCount, createdAt
+        Todo {
+          objectId, title, priority, createdAt
         }
       }
     `).then( res => {
-      res.body.data.NPMPackages.forEach( ({objectId, name, usersCount, createdAt}) => {
+      res.body.data.Todo.forEach( ({objectId, title, priority, createdAt}) => {
         objectId.should.be.a('string');
-        name.should.be.a('string');
-        usersCount.should.be.a('number');
+        title.should.be.a('string');
+        priority.should.be.a('number');
         createdAt.should.be.a('string');
       });
     });
   });
 
-  it('should sort by usersCount', () => {
+  it('should sort by priority', () => {
     return requestGraphQL(`
       query {
-        NPMPackages(ascending: "usersCount") {
-          name, usersCount
+        Todo(ascending: "priority") {
+          title, priority
         }
       }
     `).then( res => {
-      res.body.data.NPMPackages.reduce( (previous, {usersCount}) => {
-        usersCount.should.least(previous);
-        return usersCount;
+      res.body.data.Todo.reduce( (previous, {priority}) => {
+        priority.should.least(previous);
+        return priority;
       }, -Infinity);
     });
   });
@@ -36,25 +36,25 @@ describe('query', function() {
   it('should get only 2 objects', () => {
     return requestGraphQL(`
       query {
-        NPMPackages(limit: 2) {
-          name, usersCount
+        Todo(limit: 2) {
+          title, priority
         }
       }
     `).then( res => {
-      res.body.data.NPMPackages.length.should.be.equal(2);
+      res.body.data.Todo.length.should.be.equal(2);
     });
   });
 
   it('should get object by id', () => {
     return requestGraphQL(`
       query {
-        NPMPackages(objectId: "5852706c128fe10069815bcb") {
-          name
+        Todo(objectId: "5853a0e5128fe1006b5ce449") {
+          title
         }
       }
     `).then( res => {
-      res.body.data.NPMPackages.length.should.be.equal(1);
-      res.body.data.NPMPackages[0].name.should.be.equal('leanengine');
+      res.body.data.Todo.length.should.be.equal(1);
+      res.body.data.Todo[0].title.should.be.equal('还信用卡账单');
     });
   });
 });
