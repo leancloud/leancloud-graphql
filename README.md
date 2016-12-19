@@ -7,6 +7,8 @@
 - [GraphQL](#graphql)
 - [获取数据](#%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE)
 - [查询条件](#%E6%9F%A5%E8%AF%A2%E6%9D%A1%E4%BB%B6)
+  * [equalTo](#equalto)
+  * [范围查询](#%E8%8C%83%E5%9B%B4%E6%9F%A5%E8%AF%A2)
 - [关系查询](#%E5%85%B3%E7%B3%BB%E6%9F%A5%E8%AF%A2)
   * [Relation](#relation)
   * [Pointer](#pointer)
@@ -126,7 +128,7 @@ query {
 
 结果：
 
-```
+```javascript
 {
   Todo: [
     {title: "还信用卡账单", priority: 10}
@@ -134,9 +136,11 @@ query {
 }
 ```
 
+### equalTo
+
 你也可以像 LeanCloud 的 SDK 一样使用多种查询条件：
 
-```
+```graphql
 query {
   Todo(equalTo: {title: "团队会议"}) {
     title
@@ -144,9 +148,22 @@ query {
 }
 ```
 
-目前支持的条件包括：
+### 范围查询
 
-- `equalTo`，约束字段的值相等。
+```graphql
+query {
+  Todo(greaterThanOrEqualTo: {priority: 10}) {
+    title, priority
+  }
+}
+```
+
+目前支持的查询包括：
+
+- greaterThan
+- greaterThanOrEqualTo
+- lessThan
+- lessThanOrEqualTo
 
 ## 关系查询
 

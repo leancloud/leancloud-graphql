@@ -70,4 +70,18 @@ describe('query', function() {
       res.body.data.Todo[0].title.should.be.equal('团队会议');
     });
   });
+
+  it('should work with greaterThanOrEqualTo', () => {
+    return requestGraphQL(`
+      query {
+        Todo(greaterThanOrEqualTo: {priority: 10}) {
+          title, priority
+        }
+      }
+    `).then( res => {
+      res.body.data.Todo.forEach( ({priority}) => {
+        priority.should.least(10);
+      });
+    });
+  });
 });

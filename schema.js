@@ -164,7 +164,19 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
               },
               equalTo: {
                 type: createFieldsInputType('equalTo')
-              }
+              },
+              greaterThan: {
+                type: createFieldsInputType('greaterThan')
+              },
+              greaterThanOrEqualTo: {
+                type: createFieldsInputType('greaterThanOrEqualTo')
+              },
+              lessThan: {
+                type: createFieldsInputType('lessThan')
+              },
+              lessThanOrEqualTo: {
+                type: createFieldsInputType('lessThanOrEqualTo')
+              },
             },
             resolve: (source, args, {authOptions}, info) => {
               const query = new AV.Query(className);
@@ -175,7 +187,7 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
                 }
               });
 
-              ['equalTo'].forEach( method => {
+              ['equalTo', 'greaterThan', 'greaterThanOrEqualTo', 'lessThan', 'lessThanOrEqualTo'].forEach( method => {
                 if (_.isObject(args[method])) {
                   _.forEach(args[method], (value, key) => {
                     query[method](key, value);
