@@ -162,9 +162,6 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
               limit: {
                 type: GraphQLInt
               },
-              skip: {
-                type: GraphQLInt
-              },
               equalTo: {
                 type: createFieldsInputType('equalTo')
               }
@@ -172,7 +169,7 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
             resolve: (source, args, {authOptions}, info) => {
               const query = new AV.Query(className);
 
-              ['ascending', 'descending', 'limit', 'skip'].forEach( method => {
+              ['ascending', 'descending', 'limit'].forEach( method => {
                 if (args[method] !== undefined) {
                   query[method](args[method]);
                 }

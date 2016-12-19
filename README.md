@@ -10,6 +10,7 @@
 - [关系查询](#%E5%85%B3%E7%B3%BB%E6%9F%A5%E8%AF%A2)
   * [Relation](#relation)
   * [Pointer](#pointer)
+  * [反向关系](#%E5%8F%8D%E5%90%91%E5%85%B3%E7%B3%BB)
   * [多级关系](#%E5%A4%9A%E7%BA%A7%E5%85%B3%E7%B3%BB)
 - [修改对象](#%E4%BF%AE%E6%94%B9%E5%AF%B9%E8%B1%A1)
   * [创建对象](#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1)
@@ -86,10 +87,9 @@ requestGraphQL(`
 
 你可以在此基础上添加排序、条数限制等选项：
 
-- `ascending` 按照指定字段升序
-- `descending` 按照指定字段降序
-- `limit` 条数限制
-- `skip` 跳过指定条数
+- `ascending` 按照指定字段升序。
+- `descending` 按照指定字段降序。
+- `limit` 条数限制。
 
 例如我们按照优先级升序排序，取最重要的两个任务：
 
