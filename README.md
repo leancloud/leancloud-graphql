@@ -160,10 +160,25 @@ query {
 
 目前支持的查询包括：
 
-- greaterThan
-- greaterThanOrEqualTo
-- lessThan
-- lessThanOrEqualTo
+- `greaterThan` 约束指定列大于特定值。
+- `greaterThanOrEqualTo` 约束指定列大于等于特定值。
+- `lessThan` 约束指定列小于特定值。
+- `lessThanOrEqualTo` 约束指定列小于等于特定值。
+
+### 数组查询
+
+```graphql
+query {
+  Todo(containedIn: {tags: ["Online"]}) {
+    title, tags
+  }
+}
+```
+
+目前支持的数组查询包括：
+
+- `containedIn` 约束指定列中包含特定元素。
+- `containsAll` 约束指定列中包含所有元素。
 
 ## 关系查询
 

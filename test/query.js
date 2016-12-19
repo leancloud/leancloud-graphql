@@ -84,4 +84,18 @@ describe('query', function() {
       });
     });
   });
+
+  it('should work with containedIn', () => {
+    return requestGraphQL(`
+      query {
+        Todo(containedIn: {tags: ["Online"]}) {
+          title, tags
+        }
+      }
+    `).then( res => {
+      res.body.data.Todo.forEach( ({tags}) => {
+        tags.should.eql(['Online']);
+      });
+    });
+  });
 });

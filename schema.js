@@ -123,24 +123,18 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
             })
           });
 
-          const createFieldsInputType = function(argName, {arrayWrap, innerType} = {}) {
+          const createFieldsInputType = function(argName, innerType) {
             return new GraphQLInputObjectType({
               name: `${className}${_.upperFirst(argName)}Argument`,
               fields: _.pickBy(_.mapValues(schema, (definition, field) => {
-                var fieldType = innerType;
-
-                if (!innerType) {
-                  if (LCTypeMapping[definition.type]) {
-                    fieldType = LCTypeMapping[definition.type];
-                  } else {
-                    return null;
-                  }
-                }
-
-                if (arrayWrap) {
-                  return {type: new GraphQLList(fieldType)};
+                if (innerType) {
+                  return {type: innerType};
+                } else if (LCTypeMapping[definition.type]) {
+                  return {
+                    type: LCTypeMapping[definition.type]
+                  };
                 } else {
-                  return {type: fieldType};
+                  return null;
                 }
               }))
             });
@@ -177,6 +171,12 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
               lessThanOrEqualTo: {
                 type: createFieldsInputType('lessThanOrEqualTo')
               },
+              containedIn: {
+                type: createFieldsInputType('containedIn', new GraphQLList(GraphQLID))
+              },
+              containsAll: {
+                type: createFieldsInputType('containsAll', new GraphQLList(GraphQLID))
+              }
             },
             resolve: (source, args, {authOptions}, info) => {
               const query = new AV.Query(className);
@@ -187,7 +187,8 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
                 }
               });
 
-              ['equalTo', 'greaterThan', 'greaterThanOrEqualTo', 'lessThan', 'lessThanOrEqualTo'].forEach( method => {
+              ['equalTo', 'greaterThan', 'greaterThanOrEqualTo', 'lessThan', 'lessThanOrEqualTo',
+               'containedIn', 'containsAll'].forEach( method => {
                 if (_.isObject(args[method])) {
                   _.forEach(args[method], (value, key) => {
                     query[method](key, value);
