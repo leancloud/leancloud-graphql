@@ -4,7 +4,7 @@ const {GraphQLID, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLFloat} = req
 const _ = require('lodash');
 const AV = require('leancloud-storage');
 
-const LCData = new GraphQLScalarType({
+const LCDate = new GraphQLScalarType({
   name: 'Date',
   serialize: (date) => {
     return date.toJSON();
@@ -29,7 +29,7 @@ const LCTypeMapping = {
   String: GraphQLString,
   Number: GraphQLFloat,
   Boolean: GraphQLBoolean,
-  Date: LCData,
+  Date: LCDate,
   Object: LCObject,
   Array: LCArray
 }
