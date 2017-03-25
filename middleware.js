@@ -10,7 +10,7 @@ module.exports = function({graphiql, cors, pretty} = {graphiql: true, cors: true
 
   if (cors) {
     router.use(require('cors')({
-      allowedHeaders: ['X-LC-Session'],
+      allowedHeaders: ['X-LC-Session','content-type'],
       maxAge: 86400
     }));
   }
