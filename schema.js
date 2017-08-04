@@ -38,8 +38,6 @@ const LCTypeMapping = {
 }
 
 module.exports = function buildSchema({appId, appKey, masterKey}) {
-  AV.init({appId, appKey, masterKey});
-
   return request({
     url: 'https://api.leancloud.cn/1.1/schemas',
     json: true,
