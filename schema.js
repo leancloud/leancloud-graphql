@@ -28,18 +28,32 @@ const LCArray = new GraphQLScalarType({
   }
 });
 
+const LCFile = new GraphQLScalarType({
+  name: 'File',
+  serialize: (file) => {
+    return file;
+  }
+});
+
+const LCGeoPoint = new GraphQLScalarType({
+  name: 'GeoPoint',
+  serialize: (point) => {
+    return point;
+  }
+});
+
 const LCTypeMapping = {
   String: GraphQLString,
   Number: GraphQLFloat,
   Boolean: GraphQLBoolean,
   Date: LCDate,
   Object: LCObject,
-  Array: LCArray
+  Array: LCArray,
+  File: LCFile,
+  GeoPoint: LCGeoPoint
 }
 
 module.exports = function buildSchema({appId, appKey, masterKey}) {
-  AV.init({appId, appKey, masterKey});
-
   return request({
     url: 'https://api.leancloud.cn/1.1/schemas',
     json: true,
@@ -47,6 +61,15 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
       'X-LC-Id': appId,
       'X-LC-Key': `${masterKey},master`
     }
+  }).then( cloudSchemas => {
+    return _.mapValues(cloudSchemas, (schema, className) => {
+      return _.omitBy(schema, (definition, field) => {
+        if (field.startsWith('__')) {
+          console.error(`[leancloud-graphql] Ignored invalid GraphQL field name \`${className}.${field}\``);
+          return true;
+        }
+      });
+    });
   }).then( cloudSchemas => {
     const classes = _.mapValues(cloudSchemas, (schema, className) => {
       return AV.Object.extend(className);

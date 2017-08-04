@@ -29,7 +29,7 @@
 
 ## 部署到云引擎
 
-[![Deploy to LeanEngine](http://ac-32vx10b9.clouddn.com/109bd02ee9f5875a.png)](https://leancloud.cn/1.1/engine/deploy-button)
+见 [LeanCloud 命令行工具](https://leancloud.cn/docs/leanengine_cli.html)。
 
 ## GraphQL
 
