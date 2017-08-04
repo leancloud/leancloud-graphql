@@ -1,11 +1,11 @@
 {
   "name": "leancloud-graphql",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Third party GraphQL support for LeanCloud, running on LeanEngine",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jysperm/leancloud-graphql"
+    "url": "https://github.com/leancloud/leancloud-graphql"
   },
   "scripts": {
     "test": "mocha"
