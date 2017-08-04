@@ -28,13 +28,29 @@ const LCArray = new GraphQLScalarType({
   }
 });
 
+const LCFile = new GraphQLScalarType({
+  name: 'File',
+  serialize: (file) => {
+    return file;
+  }
+});
+
+const LCGeoPoint = new GraphQLScalarType({
+  name: 'GeoPoint',
+  serialize: (point) => {
+    return point;
+  }
+});
+
 const LCTypeMapping = {
   String: GraphQLString,
   Number: GraphQLFloat,
   Boolean: GraphQLBoolean,
   Date: LCDate,
   Object: LCObject,
-  Array: LCArray
+  Array: LCArray,
+  File: LCFile,
+  GeoPoint: LCGeoPoint
 }
 
 module.exports = function buildSchema({appId, appKey, masterKey}) {
