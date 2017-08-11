@@ -196,6 +196,9 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
           lessThanOrEqualTo: {
             type: createFieldsInputType('lessThanOrEqualTo')
           },
+          contains: {
+            type: createFieldsInputType('contains')
+          },
           containedIn: {
             type: createFieldsInputType('containedIn', new GraphQLList(GraphQLID))
           },
@@ -251,7 +254,7 @@ function addArgumentsToQuery(query, args) {
   });
 
   ['equalTo', 'greaterThan', 'greaterThanOrEqualTo', 'lessThan',
-   'lessThanOrEqualTo', 'containedIn', 'containsAll'].forEach( method => {
+   'lessThanOrEqualTo', 'contains', 'containedIn', 'containsAll'].forEach( method => {
     if (_.isObject(args[method])) {
       _.forEach(args[method], (value, key) => {
         query[method](key, value);
