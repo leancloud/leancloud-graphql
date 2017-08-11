@@ -181,6 +181,12 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
           skip: {
             type: GraphQLInt
           },
+          addAscending: {
+            type: GraphQLString
+          },
+          addDescending: {
+            type: GraphQLString
+          },
           equalTo: {
             type: createFieldsInputType('equalTo')
           },
@@ -247,7 +253,7 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
 };
 
 function addArgumentsToQuery(query, args) {
-  ['ascending', 'descending', 'limit', 'skip'].forEach( method => {
+  ['ascending', 'descending', 'addAscending', 'addDescending', 'limit', 'skip'].forEach( method => {
     if (args[method] !== undefined) {
       query[method](args[method]);
     }
