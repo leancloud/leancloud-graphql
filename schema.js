@@ -178,6 +178,9 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
           limit: {
             type: GraphQLInt
           },
+          skip: {
+            type: GraphQLInt
+          },
           equalTo: {
             type: createFieldsInputType('equalTo')
           },
@@ -241,7 +244,7 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
 };
 
 function addArgumentsToQuery(query, args) {
-  ['ascending', 'descending', 'limit'].forEach( method => {
+  ['ascending', 'descending', 'limit', 'skip'].forEach( method => {
     if (args[method] !== undefined) {
       query[method](args[method]);
     }
