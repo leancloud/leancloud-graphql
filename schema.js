@@ -182,10 +182,10 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
             type: GraphQLInt
           },
           addAscending: {
-            type: GraphQLString
+            type: FieldsEnum
           },
           addDescending: {
-            type: GraphQLString
+            type: FieldsEnum
           },
           equalTo: {
             type: createFieldsInputType('equalTo')
