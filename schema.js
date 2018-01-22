@@ -178,6 +178,15 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
           limit: {
             type: GraphQLInt
           },
+          skip: {
+            type: GraphQLInt
+          },
+          addAscending: {
+            type: FieldsEnum
+          },
+          addDescending: {
+            type: FieldsEnum
+          },
           equalTo: {
             type: createFieldsInputType('equalTo')
           },
@@ -192,6 +201,9 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
           },
           lessThanOrEqualTo: {
             type: createFieldsInputType('lessThanOrEqualTo')
+          },
+          contains: {
+            type: createFieldsInputType('contains')
           },
           containedIn: {
             type: createFieldsInputType('containedIn', new GraphQLList(GraphQLID))
@@ -241,14 +253,14 @@ module.exports = function buildSchema({appId, appKey, masterKey}) {
 };
 
 function addArgumentsToQuery(query, args) {
-  ['ascending', 'descending', 'limit'].forEach( method => {
+  ['ascending', 'descending', 'addAscending', 'addDescending', 'limit', 'skip'].forEach( method => {
     if (args[method] !== undefined) {
       query[method](args[method]);
     }
   });
 
   ['equalTo', 'greaterThan', 'greaterThanOrEqualTo', 'lessThan',
-   'lessThanOrEqualTo', 'containedIn', 'containsAll'].forEach( method => {
+   'lessThanOrEqualTo', 'contains', 'containedIn', 'containsAll'].forEach( method => {
     if (_.isObject(args[method])) {
       _.forEach(args[method], (value, key) => {
         query[method](key, value);
